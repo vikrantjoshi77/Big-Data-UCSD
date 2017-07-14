@@ -1,1 +1,156 @@
+Basic Hadoop Operations on the Cloudera VM:
 
+## Home Directory:
+/user/cloudera ##
+[cloudera@quickstart ~]$ ls
+cloudera-manager  Downloads                   kerberos  Pictures   Vikrant
+cm_api.py         eclipse                     lib       Public     workspace
+Desktop           enterprise-deployment.json  Music     Templates
+Documents         express-deployment.json     parcels   Videos
+
+[cloudera@quickstart Vikrant]$ ls
+Hadoop.txt  Hadoop.txt~
+
+[cloudera@quickstart Vikrant]$ cd ..
+[cloudera@quickstart ~]$ cd ..
+[cloudera@quickstart home]$ ls
+cloudera
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+## Root Directory ##
+[cloudera@quickstart home]$ cd ..
+[cloudera@quickstart /]$ ls
+bin   dev  home  lib64       media  opt   root  selinux  sys  usr
+boot  etc  lib   lost+found  mnt    proc  sbin  srv      tmp  var
+
+[cloudera@quickstart /]$ cd /
+[cloudera@quickstart /]$ ls
+bin   dev  home  lib64       media  opt   root  selinux  sys  usr
+boot  etc  lib   lost+found  mnt    proc  sbin  srv      tmp  var
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+## Back to home directory ##
+[cloudera@quickstart /]$ cd ~
+[cloudera@quickstart ~]$ ls
+cloudera-manager  Downloads                   kerberos  Pictures   Vikrant
+cm_api.py         eclipse                     lib       Public     workspace
+Desktop           enterprise-deployment.json  Music     Templates
+Documents         express-deployment.json     parcels   Videos
+[cloudera@quickstart ~]$ 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Opening GEdit Txt file
+[cloudera@quickstart ~]$ cd Vikrant/
+[cloudera@quickstart Vikrant]$ ls
+Hadoop.txt  Hadoop.txt~
+[cloudera@quickstart Vikrant]$ gedit Hadoop.txt
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+hadoop-mapreduce-examples.jar
+
+find function:
+[cloudera@quickstart Vikrant]$ find / -name hadoop-mapreduce-examples.jar
+/usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar
+
+[cloudera@quickstart usr]$ cd lib/hadoop-mapreduce
+[cloudera@quickstart hadoop-mapreduce]$ ls
+hadoop-mapreduce-examples-2.6.0-cdh5.10.0.jar
+hadoop-mapreduce-examples.jar
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Executing Word Count Program
+
+Save the link:
+http://ocw.mit.edu/ans7870/6/6.006/s08/lecturenotes/files/t8.shakespeare.txt
+
+in the Vikrant Folder:
+[cloudera@quickstart ~]$ cd Vikrant/
+[cloudera@quickstart Vikrant]$ ls
+Hadoop.txt  Hadoop.txt~  shakespeare.txt
+
+Copy file to HDFS:Run hadoop fs –copyFromLocal shakespeare.txt to copy the text file to HDFS
+[cloudera@quickstart Vikrant]$ hadoop fs -copyFromLocal shakespeare.txt
+
+Verify file was copied to HDFS: Run hadoop fs -ls to verify
+[cloudera@quickstart Vikrant]$ hadoop fs -ls
+Found 3 items
+drwxr-xr-x   - cloudera cloudera          0 2017-07-04 16:02 out
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-05 17:46 shakespeare.txt
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-04 15:30 words.txt
+
+Copy a file within HDFS: You can make a copy of a file in HDFS. Run 
+hadoop fs -cp words.txt words2.txt 
+
+[cloudera@quickstart Vikrant]$ hadoop fs -cp words.txt words2.txt
+[cloudera@quickstart Vikrant]$ hadoop fs -ls
+Found 4 items
+drwxr-xr-x   - cloudera cloudera          0 2017-07-04 16:02 out
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-05 17:46 shakespeare.txt
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-04 15:30 words.txt
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-05 17:50 words2.txt
+
+Copy a file from HDFS: hadoop fs -copyToLocal words2txt
+[cloudera@quickstart Vikrant]$ hadoop fs -copyToLocal words2.txt
+[cloudera@quickstart Vikrant]$ ls
+Hadoop.txt  Hadoop.txt~  shakespeare.txt  words2.txt
+
+Delete a file in HDFS: hadoop fs -rm words2.txt
+[cloudera@quickstart Vikrant]$ hadoop fs -rm words2.txt
+Deleted words2.txt
+[cloudera@quickstart Vikrant]$ hadoop fs -ls
+Found 3 items
+drwxr-xr-x   - cloudera cloudera          0 2017-07-04 16:02 out
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-05 17:46 shakespeare.txt
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-04 15:30 words.txt
+
+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Running your first Wordcount Program: See example MapReduce programs. Hadoop comes with several example MapReduce applications. You can see a list of them by running hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar  We are interested in running WordCount. The command below lists various list of available codes/programs
+
+[cloudera@quickstart ~]$ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar
+
+wordcount: A map/reduce program that counts the words in the input files.
+
+[cloudera@quickstart ~]$ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar wordcount
+Usage: wordcount <in> [<in>...] <out>
+
+[cloudera@quickstart Vikrant]$ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar wordcount shakespeare.txt wordcountout
+
+See Wordcount output directory: Once wordcount is finished, verify the output was created. First check for output directory wordcountout, was created in HDFS by running 
+hadoop fs -ls
+
+[cloudera@quickstart Vikrant]$ hadoop fs -ls
+Found 4 items
+drwxr-xr-x   - cloudera cloudera          0 2017-07-04 16:02 out
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-05 17:46 shakespeare.txt
+drwxr-xr-x   - cloudera cloudera          0 2017-07-05 18:05 wordcountout
+-rw-r--r--   1 cloudera cloudera    5458199 2017-07-04 15:30 words.txt
+
+Output is created in a directory that has several files. Look inside the directory by running hadoop fs -ls wordcountout
+
+[cloudera@quickstart Vikrant]$ hadoop fs -ls wordcountout
+Found 2 items
+-rw-r--r--   1 cloudera cloudera          0 2017-07-05 18:05 wordcountout/_SUCCESS
+-rw-r--r--   1 cloudera cloudera     717768 2017-07-05 18:05 wordcountout/part-r-00000
+
+file part-r-00000 contains the results of the Wordcount. the File _SUCCESS means wordcount executed successfully. 
+
+Copy Wordcount results to local file system: Copy part-r-00000 to the local file system
+by running  hadoop fs -copyToLocal wordcountout/part-r-00000 local.txt
+
+[cloudera@quickstart Vikrant]$ hadoop fs -copyToLocal wordcountout/part-r-00000 local.txt
+[cloudera@quickstart Vikrant]$ ls
+Hadoop.txt  Hadoop.txt~  local.txt  shakespeare.txt  words2.txt
+
+View the word count rsults: more local.txt
+
+[cloudera@quickstart Vikrant]$ more local.txt
+"	241
+"'Tis	1
+"A	4
+"AS-IS".	1
+"Air,"	1
+"Alas,	1
+"Amen"	2
+"Amen"?	1
+"Amen,"	1
